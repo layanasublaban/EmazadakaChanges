@@ -3,12 +3,13 @@ import { useAuth } from '@/lib/auth'
 import { Logo } from './Logo'
 import { UserCircleIcon } from './Icons'
 
-const links = [
-  { label: 'HomePage', to: '/' },
+export const links = [
+  { label: 'Home', to: '/' },
   { label: 'Auctions', to: '/auctions' },
+  { label: 'Live Bidding', to: '/live-bidding' },
+  { label: 'Direct Offers', to: '/offers' },
   { label: 'Map', to: '/map' },
-  { label: 'Contact Us', to: '/contact' },
-  { label: 'About Us', to: '/about' },
+  { label: 'List Property', to: '/list-property' },
 ]
 
 interface NavbarProps {
