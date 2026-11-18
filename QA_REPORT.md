@@ -24,3 +24,8 @@ Date: 2026-11-16. Scope: Figma file `EmazadakPro` (Website, WebsiteTranslation, 
 - Not run: `pnpm install` / `vite build` / `tsc` (package installs are blocked in this workspace). Run `pnpm install && pnpm build` before deploying.
 - Admin data is in-memory demo data; state resets on page reload (language and login session are kept in localStorage). Demo login: `admin@emazadak.com` / `admin123`.
 - Admin keyboard and screen reader basics are in place (labels, `aria-current`, dialog role, `role=alert` errors); a full WCAG pass was not done.
+
+## Nov 2026 – mobile / Arabic / maps round
+- SSR render of 11 routes in English and Arabic: no errors; scan for untranslated visible strings in Arabic: clean.
+- Playwright at 390×844 (EN + AR) and 1440×900 (AR): no horizontal overflow on home, auctions, details, live bidding, offers, map, list property, sign in/up.
+- Google Maps JS API could not be exercised here (no API key); the keyless fallbacks were verified.

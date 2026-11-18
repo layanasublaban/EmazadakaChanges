@@ -3,6 +3,7 @@ import { Footer } from '@/components/Footer'
 import { Navbar } from '@/components/Navbar'
 import { PageHeader } from '@/components/PageHeader'
 import type { PropertyType } from '@/data/auctions'
+import { useI18n } from '@/lib/i18n'
 import { Link } from '@/lib/router'
 import { useAuth } from '@/lib/auth'
 
@@ -33,11 +34,12 @@ const KEY = 'emazadak.listings'
 
 const cls = (e?: string) => `w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 ${e ? 'border-red-400 focus:ring-red-200' : 'border-black/15 focus:border-brand focus:ring-brand/20'}`
 function F({ label, error, children, hint }: { label: string; error?: string; children: React.ReactNode; hint?: string }) {
+  const { t } = useI18n()
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-ink">{label}</span>
+      <span className="mb-1.5 block text-xs font-medium text-ink">{t(label)}</span>
       {children}
-      {error ? <span role="alert" className="mt-1 block text-[11px] text-red-600">{error}</span> : hint ? <span className="mt-1 block text-[11px] text-muted">{hint}</span> : null}
+      {error ? <span role="alert" className="mt-1 block text-[11px] text-red-600">{t(error)}</span> : hint ? <span className="mt-1 block text-[11px] text-muted">{t(hint)}</span> : null}
     </label>
   )
 }
@@ -69,6 +71,7 @@ function check(step: number, d: Draft): Record<string, string> {
 
 export default function ListPropertyPage({ route }: { route: string }) {
   const { loggedIn, user } = useAuth()
+  const { t } = useI18n()
   const [step, setStep] = useState(0)
   const [d, setD] = useState<Draft>(empty)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -108,35 +111,35 @@ export default function ListPropertyPage({ route }: { route: string }) {
       <Navbar active={route} />
       <PageHeader title="List Your Property" subtitle="Sell through a transparent digital auction or a direct offer. Our team reviews every listing before it goes live." />
 
-      <main className="mx-auto mt-8 max-w-[860px] px-6">
+      <main className="mx-auto mt-6 max-w-[860px] px-4 sm:mt-8 sm:px-6">
         {!loggedIn ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-            <h2 className="text-xl font-semibold text-ink">Sign in to list a property</h2>
-            <p className="mt-2 text-sm text-muted">Only verified account holders can submit properties for auction.</p>
+          <div className="animate-fade-up rounded-2xl bg-white p-6 text-center shadow-sm sm:p-10">
+            <h2 className="text-xl font-semibold text-ink">{t('Sign in to list a property')}</h2>
+            <p className="mt-2 text-sm text-muted">{t('Only verified account holders can submit properties for auction.')}</p>
             <div className="mt-6 flex justify-center gap-3">
-              <Link to="/signin?next=/list-property" className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white">Sign In</Link>
-              <Link to="/signup?next=/list-property" className="rounded-lg border border-brand px-6 py-2.5 text-sm font-semibold text-brand">Create account</Link>
+              <Link to="/signin?next=/list-property" className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white">{t('Sign In')}</Link>
+              <Link to="/signup?next=/list-property" className="rounded-lg border border-brand px-6 py-2.5 text-sm font-semibold text-brand">{t('Create account')}</Link>
             </div>
-            <ul className="mx-auto mt-8 grid max-w-[560px] gap-3 text-left text-sm text-ink sm:grid-cols-3">
-              {['Submit property details & documents', 'We verify the title deed', 'Your auction goes live to verified bidders'].map((t, i) => (
-                <li key={t} className="rounded-xl bg-brand-50 p-4"><b className="text-brand">{i + 1}.</b> {t}</li>
+            <ul className="mx-auto mt-8 grid max-w-[560px] gap-3 text-start text-sm text-ink sm:grid-cols-3">
+              {['Submit property details & documents', 'We verify the title deed', 'Your auction goes live to verified bidders'].map((k, i) => (
+                <li key={k} className="rounded-xl bg-brand-50 p-4"><b className="text-brand">{i + 1}.</b> {t(k)}</li>
               ))}
             </ul>
           </div>
         ) : ref ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+          <div className="animate-pop-in rounded-2xl bg-white p-6 text-center shadow-sm sm:p-10">
             <p className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand text-2xl text-white">✓</p>
-            <h2 className="mt-5 text-xl font-semibold text-ink">Submission received</h2>
-            <p className="mt-2 text-sm text-muted">Reference <b className="text-brand">{ref}</b>. Our team will verify your title deed and contact you at {user?.email} within 2 business days.</p>
-            <button type="button" onClick={() => { setD(empty); setStep(0); setRef('') }} className="mt-6 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white">List another property</button>
+            <h2 className="mt-5 text-xl font-semibold text-ink">{t('Submission received')}</h2>
+            <p className="mt-2 text-sm text-muted">{t('Reference')} <b className="text-brand" dir="ltr">{ref}</b>. {t('Our team will verify your title deed and contact you within 2 business days at')} <bdi>{user?.email}</bdi>.</p>
+            <button type="button" onClick={() => { setD(empty); setStep(0); setRef('') }} className="mt-6 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white">{t('List another property')}</button>
           </div>
         ) : (
-          <div className="rounded-2xl bg-white p-8 shadow-sm">
-            <ol className="mb-8 flex items-center gap-2" aria-label="Progress">
+          <div className="rounded-2xl bg-white p-5 shadow-sm sm:p-8">
+            <ol className="mb-6 flex items-center gap-2 sm:mb-8" aria-label={t('Progress')}>
               {steps.map((s, i) => (
                 <li key={s} aria-current={i === step ? 'step' : undefined} className="flex flex-1 items-center gap-2">
                   <span className={`flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i <= step ? 'bg-brand text-white' : 'bg-brand-50 text-brand'}`}>{i < step ? '✓' : i + 1}</span>
-                  <span className={`hidden text-xs sm:block ${i === step ? 'font-semibold text-brand' : 'text-muted'}`}>{s}</span>
+                  <span className={`hidden text-xs sm:block ${i === step ? 'font-semibold text-brand' : 'text-muted'}`}>{t(s)}</span>
                   {i < steps.length - 1 && <span className="h-px flex-1 bg-black/10" />}
                 </li>
               ))}
@@ -146,14 +149,14 @@ export default function ListPropertyPage({ route }: { route: string }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <F label="Property type *" error={errors.type}>
                   <select value={d.type} onChange={(e) => set('type', e.target.value as PropertyType)} className={cls(errors.type)}>
-                    <option value="">Select type</option>{types.map((t) => <option key={t}>{t}</option>)}
+                    <option value="">{t('Select type')}</option>{types.map((k) => <option key={k} value={k}>{t(k)}</option>)}
                   </select>
                 </F>
-                <F label="Listing title *" error={errors.title}><input value={d.title} onChange={(e) => set('title', e.target.value)} placeholder="e.g. Villa with garden in Dabouq" className={cls(errors.title)} /></F>
+                <F label="Listing title *" error={errors.title}><input value={d.title} onChange={(e) => set('title', e.target.value)} placeholder={t('e.g. Villa with garden in Dabouq')} className={cls(errors.title)} /></F>
                 <F label="City *" error={errors.city}>
-                  <select value={d.city} onChange={(e) => set('city', e.target.value)} className={cls(errors.city)}><option value="">Select city</option>{cities.map((c) => <option key={c}>{c}</option>)}</select>
+                  <select value={d.city} onChange={(e) => set('city', e.target.value)} className={cls(errors.city)}><option value="">{t('Select city')}</option>{cities.map((c) => <option key={c} value={c}>{t(c)}</option>)}</select>
                 </F>
-                <F label="Neighbourhood *" error={errors.area}><input value={d.area} onChange={(e) => set('area', e.target.value)} placeholder="e.g. Abdoun" className={cls(errors.area)} /></F>
+                <F label="Neighbourhood *" error={errors.area}><input value={d.area} onChange={(e) => set('area', e.target.value)} placeholder={t('e.g. Abdoun')} className={cls(errors.area)} /></F>
                 <F label="Land size (m²) *" error={errors.landSize}><input inputMode="numeric" value={d.landSize} onChange={num('landSize')} className={cls(errors.landSize)} /></F>
                 <F label="Bedrooms" hint="Leave empty for land"><input inputMode="numeric" value={d.bedrooms} onChange={num('bedrooms')} className={cls()} /></F>
                 <div className="sm:col-span-2">
@@ -165,18 +168,18 @@ export default function ListPropertyPage({ route }: { route: string }) {
             {step === 1 && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <span className="mb-1.5 block text-xs font-medium text-ink">Sale type</span>
+                  <span className="mb-1.5 block text-xs font-medium text-ink">{t('Sale type')}</span>
                   <div className="grid grid-cols-2 gap-3">
-                    {([['auction', 'Live auction', 'Bidders compete until the timer ends'], ['direct', 'Direct offer', 'Buyers send offers; you pick the best']] as const).map(([k, t, s]) => (
+                    {([['auction', 'Live auction', 'Bidders compete until the timer ends'], ['direct', 'Direct offer', 'Buyers send offers; you pick the best']] as const).map(([k, ttl, sub]) => (
                       <button key={k} type="button" aria-pressed={d.saleType === k} onClick={() => set('saleType', k)}
-                        className={`rounded-xl border px-4 py-3 text-left text-sm ${d.saleType === k ? 'border-brand bg-brand-50 font-semibold text-brand' : 'border-black/15 text-ink hover:bg-brand-50/60'}`}>{t}<span className="block text-[11px] font-normal text-muted">{s}</span></button>
+                        className={`rounded-xl border px-4 py-3 text-start text-sm ${d.saleType === k ? 'border-brand bg-brand-50 font-semibold text-brand' : 'border-black/15 text-ink hover:bg-brand-50/60'}`}>{t(ttl)}<span className="block text-[11px] font-normal text-muted">{t(sub)}</span></button>
                     ))}
                   </div>
                 </div>
                 <F label="Estimated market value (JOD) *" error={errors.marketPrice}><input inputMode="numeric" value={d.marketPrice} onChange={num('marketPrice')} className={cls(errors.marketPrice)} /></F>
                 <F label="Starting price (JOD) *" error={errors.startingPrice}><input inputMode="numeric" value={d.startingPrice} onChange={num('startingPrice')} className={cls(errors.startingPrice)} /></F>
                 {d.saleType === 'auction' && (
-                  <F label="Auction duration"><select value={d.duration} onChange={(e) => set('duration', e.target.value)} className={cls()}>{['7', '14', '21', '30'].map((n) => <option key={n} value={n}>{n} days</option>)}</select></F>
+                  <F label="Auction duration"><select value={d.duration} onChange={(e) => set('duration', e.target.value)} className={cls()}>{['7', '14', '21', '30'].map((n) => <option key={n} value={n}>{t('{n} days', { n })}</option>)}</select></F>
                 )}
                 <F label="Title deed number *" error={errors.deedNumber}><input inputMode="numeric" value={d.deedNumber} onChange={num('deedNumber')} className={cls(errors.deedNumber)} /></F>
                 <F label="Owner full name (as on deed) *" error={errors.ownerName}><input value={d.ownerName} onChange={(e) => set('ownerName', e.target.value)} className={cls(errors.ownerName)} /></F>
@@ -186,11 +189,11 @@ export default function ListPropertyPage({ route }: { route: string }) {
             {step === 2 && (
               <div className="space-y-6">
                 <F label="Property photos * (at least 3, JPG or PNG)" error={errors.photos}>
-                  <input type="file" accept="image/*" multiple onChange={(e) => set('photos', Array.from(e.target.files ?? []))} className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white" />
+                  <input type="file" accept="image/*" multiple onChange={(e) => set('photos', Array.from(e.target.files ?? []))} className="block w-full text-sm file:me-3 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white" />
                 </F>
-                {urls.length > 0 && <div className="grid grid-cols-4 gap-2">{urls.map((u) => <img key={u} src={u} alt="" className="aspect-square rounded-lg object-cover" />)}</div>}
+                {urls.length > 0 && <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">{urls.map((u) => <img key={u} src={u} alt="" className="aspect-square rounded-lg object-cover" />)}</div>}
                 <F label="Title deed copy * (PDF or image)" error={errors.deed}>
-                  <input type="file" accept="application/pdf,image/*" onChange={(e) => set('deed', e.target.files?.[0] ?? null)} className="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white" />
+                  <input type="file" accept="application/pdf,image/*" onChange={(e) => set('deed', e.target.files?.[0] ?? null)} className="block w-full text-sm file:me-3 file:rounded-lg file:border-0 file:bg-brand file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white" />
                 </F>
               </div>
             )}
@@ -198,24 +201,24 @@ export default function ListPropertyPage({ route }: { route: string }) {
             {step === 3 && (
               <div className="space-y-5">
                 <dl className="grid gap-x-6 gap-y-3 rounded-xl bg-brand-50 p-5 text-sm sm:grid-cols-2">
-                  {([['Type', d.type], ['Title', d.title], ['Location', `${d.area}, ${d.city}`], ['Land size', `${d.landSize} m²`], ['Sale type', d.saleType === 'auction' ? `Live auction · ${d.duration} days` : 'Direct offer'], ['Starting price', `${Number(d.startingPrice).toLocaleString('en-US')} JOD`], ['Market value', `${Number(d.marketPrice).toLocaleString('en-US')} JOD`], ['Deed no.', d.deedNumber], ['Owner', d.ownerName], ['Photos', `${d.photos.length} uploaded`]] as const).map(([k, v]) => (
-                    <div key={k}><dt className="text-[11px] text-muted">{k}</dt><dd className="font-medium text-ink">{v}</dd></div>
+                  {([['Type', t(d.type)], ['Title', d.title], ['Location', `${d.area}, ${t(d.city)}`], ['Land size', `${d.landSize} m²`], ['Sale type', d.saleType === 'auction' ? `${t('Live auction')} · ${t('{n} days', { n: d.duration })}` : t('Direct offer')], ['Starting price', `${Number(d.startingPrice).toLocaleString('en-US')} JOD`], ['Market value', `${Number(d.marketPrice).toLocaleString('en-US')} JOD`], ['Deed no.', d.deedNumber], ['Owner', d.ownerName], ['Photos', t('{n} uploaded', { n: d.photos.length })]] as const).map(([k, v]) => (
+                    <div key={k}><dt className="text-[11px] text-muted">{t(k)}</dt><dd className="font-medium text-ink"><bdi>{v}</bdi></dd></div>
                   ))}
                 </dl>
                 <label className="flex items-start gap-2.5 text-xs text-ink">
                   <input type="checkbox" checked={d.agree} onChange={(e) => set('agree', e.target.checked)} className="mt-0.5 size-4 accent-brand" />
-                  <span>I confirm I am the owner or authorised to sell this property, the information is accurate, and I accept Emazadak’s seller terms and commission.</span>
+                  <span>{t('I confirm I am the owner or authorised to sell this property, the information is accurate, and I accept Emazadak’s seller terms and commission.')}</span>
                 </label>
-                {errors.agree && <p role="alert" className="text-[11px] text-red-600">{errors.agree}</p>}
+                {errors.agree && <p role="alert" className="text-[11px] text-red-600">{t(errors.agree)}</p>}
               </div>
             )}
 
-            <div className="mt-8 flex justify-between">
-              <button type="button" disabled={step === 0} onClick={() => setStep((s) => s - 1)} className="rounded-lg border border-black/15 px-6 py-2.5 text-sm disabled:opacity-40">Back</button>
+            <div className="mt-8 flex justify-between gap-3">
+              <button type="button" disabled={step === 0} onClick={() => setStep((s) => s - 1)} className="rounded-lg border border-black/15 px-6 py-2.5 text-sm disabled:opacity-40">{t('Back')}</button>
               {step < 3 ? (
-                <button type="button" onClick={next} className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">Continue</button>
+                <button type="button" onClick={next} className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">{t('Continue')}</button>
               ) : (
-                <button type="button" onClick={submit} className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">Submit for review</button>
+                <button type="button" onClick={submit} className="rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">{t('Submit for review')}</button>
               )}
             </div>
           </div>

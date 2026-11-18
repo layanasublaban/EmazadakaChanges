@@ -1,5 +1,6 @@
 import AdminApp from '@/admin/AdminApp'
 import { AuthProvider } from '@/lib/auth'
+import { LangProvider } from '@/lib/i18n'
 import { useHashRoute } from '@/lib/router'
 import AuctionDetailsPage from '@/pages/AuctionDetailsPage'
 import AuctionsPage from '@/pages/AuctionsPage'
@@ -37,8 +38,10 @@ function Routes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Routes />
-    </AuthProvider>
+    <LangProvider>
+      <AuthProvider>
+        <Routes />
+      </AuthProvider>
+    </LangProvider>
   )
 }

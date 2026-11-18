@@ -90,3 +90,68 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-kenburns, .animate-fade-up, .animate-progress { animation: none; }
 }
+
+/* ---------- Arabic (brand guide font: Tajawal) ---------- */
+html[lang='ar'] body,
+html[lang='ar'] button,
+html[lang='ar'] input,
+html[lang='ar'] select,
+html[lang='ar'] textarea {
+  font-family: var(--font-arabic);
+}
+html[lang='ar'] .font-serif {
+  font-family: var(--font-arabic);
+  font-weight: 700;
+}
+html[lang='ar'] .tabular-nums,
+html[lang='ar'] [dir='ltr'] {
+  direction: ltr;
+}
+
+/* ---------- More motion ---------- */
+@keyframes ping-ring {
+  0% { transform: scale(0.6); opacity: 0.75; }
+  80%, 100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 61, 61, 0.55), 0 0 12px 2px rgba(224, 61, 61, 0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(224, 61, 61, 0), 0 0 22px 6px rgba(224, 61, 61, 0.55); }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes heart-pop {
+  0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); }
+}
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; transition-delay: var(--d, 0ms); }
+.reveal.in { opacity: 1; transform: none; }
+.live-ring { position: absolute; inset: 0; border-radius: 9999px; background: currentColor; animation: ping-ring 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.live-glow { animation: glow-pulse 1.8s ease-in-out infinite; }
+.animate-float { animation: float-y 5s ease-in-out infinite; }
+.animate-slide-down { animation: slide-down 0.2s ease-out both; }
+.animate-heart { animation: heart-pop 0.35s ease-out; }
+.btn-shine { position: relative; overflow: hidden; }
+.btn-shine::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); background-size: 200% 100%; background-position: -200% 0; }
+.btn-shine:hover::after { animation: shimmer 0.9s ease-out; }
+.pin-wrap { position: relative; width: 18px; height: 18px; }
+.pin-dot { position: absolute; inset: 2px; border-radius: 9999px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .live-ring, .live-glow, .animate-float, .btn-shine:hover::after { animation: none; }
+}
+.svg-pulse { transform-box: fill-box; transform-origin: center; opacity: 0; animation: svg-pulse 1.8s ease-out infinite; pointer-events: none; }
+@keyframes svg-pulse { 0% { transform: scale(1); opacity: 0.55; } 100% { transform: scale(2.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .svg-pulse { animation: none; } }

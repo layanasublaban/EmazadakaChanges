@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { formatMoney, searchAuctions } from '@/data/auctions'
 import { navigate } from '@/lib/router'
+import { useI18n } from '@/lib/i18n'
 import { SearchIcon } from './Icons'
 import { PropertyImage } from './PropertyImage'
 
@@ -8,6 +9,7 @@ const popular = ['Villa Amman', 'Land plot', 'Aqaba', 'Apartment', 'Irbid', 'Com
 
 /** Live search: suggestions while typing, Enter / button opens the full results on the Auctions page. */
 export function SearchBox({ className = '', autoFocus = false }: { className?: string; autoFocus?: boolean }) {
+  const { t, auction } = useI18n()
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(-1)
@@ -49,7 +51,7 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
           if (active >= 0 && shown[active]) navigate(`/auctions/${shown[active].id}`)
           else go(q)
         }}
-        className="flex items-center gap-3 rounded-2xl border border-black/5 bg-white px-5 py-3 shadow-[0_10px_30px_rgba(25,75,63,0.18)] focus-within:ring-2 focus-within:ring-gold"
+        className="flex items-center gap-3 rounded-2xl border border-black/5 bg-white px-3.5 py-2.5 shadow-[0_10px_30px_rgba(25,75,63,0.18)] sm:px-5 sm:py-3 focus-within:ring-2 focus-within:ring-gold"
       >
         <SearchIcon width={22} height={22} className="shrink-0 text-icon" />
         <input
@@ -66,13 +68,13 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={onKey}
-          placeholder="Search by auction or Property – try “villa Amman”, “land”, “Aqaba”…"
+          placeholder={t('Search by auction or Property – try “villa Amman”, “land”, “Aqaba”…')}
           className="min-w-0 flex-1 bg-transparent py-1.5 text-[15px] text-ink placeholder:text-muted focus:outline-none"
         />
         {q && (
           <button
             type="button"
-            aria-label="Clear search"
+            aria-label={t('Clear search')}
             onClick={() => {
               setQ('')
               setActive(-1)
@@ -82,19 +84,19 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
             ×
           </button>
         )}
-        <button type="submit" className="rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">
-          Search
+        <button type="submit" className="btn-shine rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 sm:px-6">
+          {t('Search')}
         </button>
       </form>
 
       {open && (
         <div
           id="search-suggestions"
-          className="animate-pop-in absolute top-[calc(100%+8px)] right-0 left-0 z-30 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
+          className="animate-pop-in absolute top-[calc(100%+8px)] inset-x-0 z-30 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
         >
           {!q.trim() ? (
             <div className="p-4">
-              <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted uppercase">Popular searches</p>
+              <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted uppercase">{t('Popular searches')}</p>
               <div className="flex flex-wrap gap-2">
                 {popular.map((p) => (
                   <button
@@ -106,14 +108,14 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
                     }}
                     className="rounded-full border border-brand-200 bg-brand-50 px-3.5 py-1.5 text-xs font-medium text-brand hover:bg-brand-200/40"
                   >
-                    {p}
+                    {t(p)}
                   </button>
                 ))}
               </div>
             </div>
           ) : shown.length === 0 ? (
             <div className="p-5 text-sm text-muted">
-              No auctions match “<b className="text-ink">{q}</b>”. Try a city (Amman, Irbid, Aqaba) or a type (villa, land, apartment).
+              {t('No auctions match your search. Try a city (Amman, Irbid, Aqaba) or a type (villa, land, apartment).')}
             </div>
           ) : (
             <>
@@ -128,12 +130,12 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
                     >
                       <PropertyImage src={a.image} alt="" className="size-12 shrink-0 rounded-lg" />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-semibold text-ink">{a.title}</span>
+                        <span className="block truncate text-[13px] font-semibold text-ink">{auction(a).title}</span>
                         <span className="block truncate text-[11px] text-muted">
-                          {a.code} · {a.type} · {a.location}
+                          <bdi>{a.code}</bdi> · {auction(a).type} · {auction(a).location}
                         </span>
                       </span>
-                      <span className="shrink-0 text-right text-xs font-semibold text-brand">
+                      <span className="shrink-0 text-end text-xs font-semibold text-brand">
                         {formatMoney(a.currentBid)} <span className="font-normal text-icon">JOD</span>
                       </span>
                     </a>
@@ -143,9 +145,9 @@ export function SearchBox({ className = '', autoFocus = false }: { className?: s
               <button
                 type="button"
                 onClick={() => go(q)}
-                className="w-full border-t border-black/5 bg-brand-50 px-4 py-3 text-left text-xs font-semibold text-brand hover:bg-brand-200/40"
+                className="w-full border-t border-black/5 bg-brand-50 px-4 py-3 text-start text-xs font-semibold text-brand hover:bg-brand-200/40"
               >
-                View all {all.length} results for “{q}” →
+                {t('View all {n} results', { n: all.length })} →
               </button>
             </>
           )}
