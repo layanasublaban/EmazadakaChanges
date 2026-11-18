@@ -63,3 +63,30 @@
     );
   }
 }
+
+/* ---------- Motion ---------- */
+@keyframes kenburns {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.12); }
+}
+@keyframes progress-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@layer utilities {
+  .animate-kenburns { animation: kenburns 9s ease-out forwards; }
+  .animate-fade-up { animation: fade-up 0.7s ease-out both; }
+  .animate-pop-in { animation: pop-in 0.15s ease-out both; }
+  .animate-progress { animation: progress-fill var(--dur, 6s) linear forwards; transform-origin: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns, .animate-fade-up, .animate-progress { animation: none; }
+}

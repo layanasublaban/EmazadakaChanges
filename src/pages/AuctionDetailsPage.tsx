@@ -24,7 +24,7 @@ function Money({ value, plus = false, big = false }: { value: number; plus?: boo
 export default function AuctionDetailsPage({ id, route }: { id: string; route: string }) {
   const a = getAuction(id)
   const { loggedIn } = useAuth()
-  const [imageIndex, setImageIndex] = useState(a.gallery.length - 1)
+  const [imageIndex, setImageIndex] = useState(0)
   const [tab, setTab] = useState<DetailTab>('Overview')
   const [liked, setLiked] = useState(false)
   const [depositPaid, setDepositPaid] = useState(false)
@@ -39,9 +39,7 @@ export default function AuctionDetailsPage({ id, route }: { id: string; route: s
 
   return (
     <div className="min-h-screen bg-page">
-      <div className="px-[41px] pt-8">
-        <Navbar active={route} />
-      </div>
+      <Navbar active={route} />
 
       <main className="mx-auto max-w-[1356px] px-[41px]">
         <nav aria-label="Breadcrumb" className="mt-8 text-base text-muted">

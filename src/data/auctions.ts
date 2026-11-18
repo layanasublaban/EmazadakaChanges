@@ -31,37 +31,51 @@ export interface Auction {
   type: PropertyType
   landSize: number
   directOffer: boolean
+  area: string
+  lat: number
+  lng: number
+  bids: number
 }
 
-/* Property photos live in public/images/properties/ (see public/images/README.md). */
-const IMG = {
+/* Property photos live in public/images/properties/ (exported from the Figma design file). */
+export const IMG = {
   dusk: '/images/properties/modern-home-dusk.jpg',
   landscape: '/images/properties/house-landscape.jpg',
   aerial: '/images/properties/aerial-villa.jpg',
   valley: '/images/properties/valley-mountains.jpg',
+  pool: '/images/properties/modern-villa-pool.jpg',
+  buildings: '/images/hero-buildings.jpg',
 }
-
-const DESCRIPTION =
-  'Spacious high-end estate featuring 5 bedrooms, landscaped gardens, private parking, and premium finishes. Clear title deed and ready for transfer.'
 
 const DAY = 86_400_000
-/** 12 days, 20 hours, 41 minutes, 8 seconds from module load (matches the design mock). */
-const END = Date.now() + 12 * DAY + 20 * 3_600_000 + 41 * 60_000 + 8_000
+const HOUR = 3_600_000
 
-const base = {
-  location: 'Amman West',
-  description: DESCRIPTION,
-  gallery: [IMG.valley, IMG.aerial, IMG.dusk, IMG.landscape],
-  originalPrice: 12_500,
-  initialPrice: 12_500,
-  marketPrice: 60_000,
-  startingPrice: 20_000,
-  currentBid: 205_000,
-  minBidIncrement: 12_500,
-  endsAt: END,
-  landSize: 800,
-  directOffer: false,
+const places: Record<string, { area: string; lat: number; lng: number }[]> = {
+  'Amman West': [
+    { area: 'Abdoun', lat: 31.95, lng: 35.89 },
+    { area: 'Dabouq', lat: 31.99, lng: 35.82 },
+    { area: 'Khalda', lat: 31.99, lng: 35.83 },
+    { area: 'Sweifieh', lat: 31.95, lng: 35.86 },
+  ],
+  'Amman East': [
+    { area: 'Marka', lat: 31.98, lng: 35.99 },
+    { area: 'Hay Nazzal', lat: 31.96, lng: 35.94 },
+    { area: 'Naur', lat: 31.87, lng: 35.83 },
+  ],
+  Zarqa: [
+    { area: 'Russeifa', lat: 32.02, lng: 36.05 },
+    { area: 'New Zarqa', lat: 32.07, lng: 36.09 },
+  ],
+  Irbid: [
+    { area: 'Al-Hasan', lat: 32.56, lng: 35.88 },
+    { area: 'University Street', lat: 32.54, lng: 35.85 },
+  ],
+  Aqaba: [
+    { area: 'Tala Bay', lat: 29.43, lng: 34.97 },
+    { area: 'South Beach', lat: 29.5, lng: 35.0 },
+  ],
 }
+const locationNames = Object.keys(places)
 
 const types: PropertyType[] = [
   'Residential Property',
@@ -69,30 +83,135 @@ const types: PropertyType[] = [
   'Residential Building',
   'Vacant Residential Land Plot',
   'Commercial Complex',
+  'Vacant Commercial Land Plot',
+  'Industrial Land Plot',
+  'Factory',
 ]
 
+const typeInfo: Record<PropertyType, { noun: string; image: string; category: string; desc: string }> = {
+  'Residential Property': {
+    noun: 'Luxury Villa',
+    image: IMG.pool,
+    category: 'Residential',
+    desc: 'Spacious high-end villa with 5 bedrooms, landscaped gardens, private parking and premium finishes. Clear title deed and ready for transfer.',
+  },
+  'Residential Apartment': {
+    noun: 'Modern Apartment',
+    image: IMG.dusk,
+    category: 'Residential',
+    desc: 'Bright 3-bedroom apartment with panoramic views, covered parking and 24/7 building security. Registered title, ready for immediate transfer.',
+  },
+  'Residential Building': {
+    noun: 'Residential Building',
+    image: IMG.aerial,
+    category: 'Residential',
+    desc: 'Income-generating residential building with fully leased units, a well-kept structure and a clean title deed on a prime street.',
+  },
+  'Vacant Residential Land Plot': {
+    noun: 'Residential Land Plot',
+    image: IMG.valley,
+    category: 'Land',
+    desc: 'Flat, fully serviced residential plot with direct street access and approved building permits. Ideal for villas or a small development.',
+  },
+  'Commercial Complex': {
+    noun: 'Commercial Complex',
+    image: IMG.buildings,
+    category: 'Commercial',
+    desc: 'Mixed-use commercial complex with retail frontage, offices and parking, in a high-traffic district with long-term tenants in place.',
+  },
+  'Vacant Commercial Land Plot': {
+    noun: 'Commercial Land Plot',
+    image: IMG.valley,
+    category: 'Land',
+    desc: 'Corner commercial plot on a main road with excellent visibility, zoned for retail and offices. Free of encumbrances.',
+  },
+  'Industrial Land Plot': {
+    noun: 'Industrial Land Plot',
+    image: IMG.valley,
+    category: 'Land',
+    desc: 'Large industrial plot with utilities connected and heavy-vehicle access, close to the main highway and logistics corridors.',
+  },
+  Factory: {
+    noun: 'Factory & Warehouse',
+    image: IMG.buildings,
+    category: 'Industrial',
+    desc: 'Operational factory with warehouse space, loading bays, 3-phase power and an office block. Clear title and ready for transfer.',
+  },
+}
+
+const rotate = <T,>(arr: T[], by: number) => [...arr.slice(by % arr.length), ...arr.slice(0, by % arr.length)]
+const allImages = [IMG.pool, IMG.dusk, IMG.aerial, IMG.landscape, IMG.valley, IMG.buildings]
+
 export const auctions: Auction[] = Array.from({ length: 60 }, (_, i) => {
-  const col = i % 3
-  const variant = [
-    { image: IMG.dusk, chip: 'Running Now', status: 'live' as const, category: 'Residential' },
-    { image: IMG.landscape, chip: 'Landscape', status: 'coming-soon' as const, category: 'Landscape' },
-    { image: IMG.aerial, chip: 'Ending Soon', status: 'ending-soon' as const, category: 'Residential' },
-  ][col]
+  const type = types[i % types.length]
+  const info = typeInfo[type]
+  const location = locationNames[(i * 3 + Math.floor(i / 5)) % locationNames.length]
+  const spot = places[location][i % places[location].length]
+  const finished = i % 10 === 9
+  const status: AuctionStatus = finished ? 'finished' : (['live', 'coming-soon', 'ending-soon'] as const)[i % 3]
+  const now = Date.now()
+  const endsAt =
+    status === 'finished'
+      ? now - DAY
+      : status === 'ending-soon'
+        ? now + (3 + (i % 20)) * HOUR + (i % 50) * 60_000
+        : now + (2 + (i % 11)) * DAY + (i % 23) * HOUR + (i % 59) * 60_000 + 8_000
+  const chip = status === 'live' ? 'Running Now' : status === 'ending-soon' ? 'Ending Soon' : status === 'finished' ? 'Closed' : info.category === 'Land' ? 'Land' : 'Coming Soon'
+  const landSize = type.includes('Apartment') ? 500 + ((i * 37) % 200) : 500 + ((i * 97) % 700)
+  const startingPrice = 20_000 + (i % 4) * 10_000
   const n = 1021 + i
   return {
-    ...base,
-    ...variant,
     id: `A${n}`,
     code: `#A ${n}`,
-    title: 'Luxury Residential Estate – Amman West',
-    type: types[i % types.length],
-    landSize: 500 + ((i * 97) % 700),
-    directOffer: i % 2 === 1,
-    startingPrice: 20_000 + (i % 4) * 10_000,
+    title: `${info.noun} – ${spot.area}, ${location}`,
+    location,
+    area: spot.area,
+    lat: spot.lat + (((i * 7) % 10) - 5) / 1000,
+    lng: spot.lng + (((i * 11) % 10) - 5) / 1000,
+    category: info.category,
+    chip,
+    status,
+    description: info.desc,
+    image: info.image,
+    gallery: rotate(allImages, i % allImages.length).slice(0, 4),
+    originalPrice: 12_500,
+    initialPrice: 12_500,
+    marketPrice: 60_000 + (i % 7) * 15_000,
+    startingPrice,
     currentBid: 205_000 + i * 5_000,
+    minBidIncrement: 12_500,
+    endsAt,
+    type,
+    landSize,
+    directOffer: i % 2 === 1,
+    bids: 4 + ((i * 5) % 37),
   }
 })
 
 export const getAuction = (id: string) => auctions.find((a) => a.id === id) ?? auctions[0]
 
 export const formatMoney = (n: number) => n.toLocaleString('en-US')
+
+/* ---------- Search ---------- */
+// Arabic keywords -> the English words used in the data, so Arabic searches work too.
+const synonyms: Record<string, string> = {
+  عمان: 'amman', الزرقاء: 'zarqa', اربد: 'irbid', إربد: 'irbid', العقبة: 'aqaba',
+  عبدون: 'abdoun', دابوق: 'dabouq', خلدا: 'khalda', الصويفية: 'sweifieh', ماركا: 'marka', الرصيفة: 'russeifa',
+  فيلا: 'villa', فلة: 'villa', شقة: 'apartment', شقق: 'apartment', ارض: 'land', أرض: 'land', اراضي: 'land', أراضي: 'land',
+  عمارة: 'building', مبنى: 'building', تجاري: 'commercial', سكني: 'residential', صناعي: 'industrial', مصنع: 'factory', مجمع: 'complex',
+}
+const norm = (t: string) => t.toLowerCase().trim()
+const haystack = (a: Auction) =>
+  norm(`${a.title} ${a.location} ${a.area} ${a.type} ${a.category} ${a.code} ${a.id} ${a.description} ${a.directOffer ? 'direct offer' : 'auction'} ${a.status.replace('-', ' ')}`)
+
+export function searchAuctions(query: string, list: Auction[] = auctions): Auction[] {
+  const tokens = norm(query)
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((t) => synonyms[t] ?? t.replace(/^#/, ''))
+  if (!tokens.length) return list
+  return list.filter((a) => {
+    const h = haystack(a)
+    return tokens.every((t) => h.includes(t))
+  })
+}

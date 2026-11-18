@@ -2,17 +2,77 @@ import { useEffect, useState } from 'react'
 import { auctions } from '@/data/auctions'
 import { AuctionCard } from '@/components/AuctionCard'
 import { Footer } from '@/components/Footer'
-import { AppleIcon, ChevronLeftIcon, ChevronRightIcon, PinIcon, PlayIcon, SearchIcon } from '@/components/Icons'
+import { AdsCarousel } from '@/components/AdsCarousel'
+import { AppleIcon, ChevronLeftIcon, ChevronRightIcon, PinIcon, PlayIcon } from '@/components/Icons'
+import { SearchBox } from '@/components/SearchBox'
 import { Navbar } from '@/components/Navbar'
 import { PropertyImage } from '@/components/PropertyImage'
 import { Link } from '@/lib/router'
 
-const ads = [
-  { id: 1, text: 'ADS about our latest auctions!' },
-  { id: 2, text: 'ADS about our latest auctions!' },
-  { id: 3, text: 'ADS about our latest auctions!' },
-  { id: 4, text: 'ADS about our latest auctions!' },
+const heroSlides = [
+  { src: '/images/hero-buildings.jpg', title: 'City properties', place: 'Amman · Zarqa · Irbid' },
+  { src: '/images/properties/aerial-villa.jpg', title: 'Villas & estates', place: 'Amman West' },
+  { src: '/images/properties/valley-mountains.jpg', title: 'Land plots', place: 'Across the Kingdom of Jordan' },
+  { src: '/images/properties/modern-villa-pool.jpg', title: 'Luxury villas', place: 'Aqaba · Dead Sea' },
+  { src: '/images/properties/house-landscape.jpg', title: 'Family homes', place: 'Irbid · Salt · Madaba' },
+  { src: '/images/properties/modern-home-dusk.jpg', title: 'Modern residences', place: 'Abdoun, Amman' },
 ]
+
+function Hero() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setI((v) => (v + 1) % heroSlides.length), 6000)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <section className="relative z-20 pb-16">
+      {/* Rotating Jordan property photos */}
+      <div className="absolute inset-0 -z-10 overflow-hidden bg-brand-50" aria-hidden>
+        {heroSlides.map((s, n) => (
+          <div key={s.src} className={`absolute inset-0 transition-opacity duration-[1400ms] ease-in-out ${n === i ? 'opacity-100' : 'opacity-0'}`}>
+            <PropertyImage src={s.src} alt="" className={`size-full ${n === i ? 'animate-kenburns' : ''}`} />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/75 to-white/10" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-page to-transparent" />
+      </div>
+
+      <Navbar active="/" />
+
+      <div className="relative mx-auto mt-16 max-w-[1360px] px-6">
+        <h1 className="animate-fade-up font-serif text-[46px] leading-[1.35] font-bold text-brand">Accelerate, Elevate,&amp; Innovate.</h1>
+        <p className="animate-fade-up font-serif text-[46px] leading-[1.35] font-bold text-gold [animation-delay:120ms]">Find your next Property</p>
+        <p className="animate-fade-up mt-3 font-serif text-[27px] font-bold text-brand [animation-delay:240ms]">Driving Innovation in Estate Auction Technology</p>
+
+        <SearchBox className="animate-fade-up mt-8 max-w-[860px] [animation-delay:360ms]" />
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+          <Link to="/auctions" className="rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
+            Browse Auctions
+          </Link>
+          <div className="flex items-center gap-4 rounded-full bg-white/85 py-2 pr-4 pl-5 shadow backdrop-blur">
+            <div className="text-right leading-tight">
+              <p className="text-xs font-semibold text-brand">{heroSlides[i].title}</p>
+              <p className="text-[11px] text-muted">{heroSlides[i].place}</p>
+            </div>
+            <div className="flex gap-1.5">
+              {heroSlides.map((s, n) => (
+                <button
+                  key={s.src}
+                  type="button"
+                  aria-label={`Show ${s.title}`}
+                  aria-current={n === i}
+                  onClick={() => setI(n)}
+                  className={`h-2 rounded-full transition-all ${n === i ? 'w-6 bg-gold' : 'w-2 bg-brand/30'}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 function CardsRow({ title, items, primaryLabel }: { title: string; items: typeof auctions; primaryLabel: string }) {
   const [visible, setVisible] = useState(3)
@@ -59,61 +119,14 @@ function CardsRow({ title, items, primaryLabel }: { title: string; items: typeof
 }
 
 export default function HomePage() {
-  const [slide, setSlide] = useState(0)
-  useEffect(() => {
-    const id = setInterval(() => setSlide((s) => (s + 1) % ads.length), 5000)
-    return () => clearInterval(id)
-  }, [])
-
   const featured = auctions.filter((a) => !a.directOffer).slice(0, 6)
   const direct = auctions.filter((a) => a.directOffer).slice(0, 6)
 
   return (
     <div className="min-h-screen bg-page">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#eef0ef] to-page pt-9 pb-24">
-        <PropertyImage
-          src="/images/hero-buildings.jpg"
-          alt=""
-          className="pointer-events-none absolute inset-0 size-full opacity-40"
-        />
-        <div className="relative px-[41px]">
-          <Navbar active="/" variant="light" />
-
-          <div className="mx-auto mt-24 max-w-[1356px]">
-            <h1 className="font-serif text-[46px] leading-[1.45] font-bold text-brand">Accelerate, Elevate,&amp; Innovate.</h1>
-            <p className="font-serif text-[46px] leading-[1.45] font-bold text-gold">Find your next Property</p>
-            <p className="mt-3 font-serif text-[27px] font-bold text-brand">Driving Innovation in Estate Auction Technology</p>
-            <Link
-              to="/auctions"
-              className="mt-6 inline-block rounded bg-brand px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
-            >
-              Browse Auctions
-            </Link>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       <div className="mx-auto max-w-[1356px] px-[41px]">
-        {/* Search */}
-        <form
-          role="search"
-          onSubmit={(e) => {
-            e.preventDefault()
-            window.location.hash = '/auctions'
-          }}
-          className="-mt-8 flex items-center rounded-md border border-black/10 bg-[#e6e6e6] px-6 py-[18px] shadow-sm"
-        >
-          <input
-            aria-label="Search by auction or property"
-            placeholder="Search by auction or Property"
-            className="flex-1 bg-transparent text-[15px] text-ink placeholder:text-muted focus:outline-none"
-          />
-          <button type="submit" aria-label="Search" className="text-icon">
-            <SearchIcon width={24} height={24} />
-          </button>
-        </form>
-
         {/* Live map banner */}
         <section className="relative mt-12 flex h-[260px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-gold/50 bg-gradient-to-b from-[#cfd9d6] to-[#e7ecea] shadow">
           {[
@@ -133,50 +146,29 @@ export default function HomePage() {
         </section>
 
         {/* Ads carousel */}
-        <section className="mt-20" aria-roledescription="carousel" aria-label="Ads">
-          <div className="flex items-center justify-center gap-5 overflow-hidden">
-            {[-1, 0, 1].map((d) => {
-              const ad = ads[(slide + d + ads.length) % ads.length]
-              const center = d === 0
-              return (
-                <div
-                  key={`${slide}-${d}`}
-                  className={`relative shrink-0 overflow-hidden rounded-lg shadow ${
-                    center ? 'h-[205px] w-[880px]' : 'h-[170px] w-[250px] opacity-90'
-                  }`}
-                >
-                  <PropertyImage src="/images/properties/valley-mountains.jpg" alt="" className="size-full" />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <span className={`font-bold text-white ${center ? 'text-[26px]' : 'text-lg'}`}>{ad.text}</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <div className="mt-6 flex justify-center gap-1.5">
-            {ads.map((ad, i) => (
-              <button
-                key={ad.id}
-                type="button"
-                aria-label={`Go to slide ${i + 1}`}
-                aria-current={i === slide}
-                onClick={() => setSlide(i)}
-                className={`size-3.5 rounded-full ${i === slide ? 'bg-gold' : 'bg-gold-100'}`}
-              />
-            ))}
-          </div>
-        </section>
+        <div className="mt-20">
+          <AdsCarousel />
+        </div>
 
         <CardsRow title="Featured Auctions" items={featured} primaryLabel="Place Bid" />
         <CardsRow title="Direct Offers" items={direct} primaryLabel="Place Offer" />
 
         {/* Download the app */}
         <section className="mx-auto mt-24 flex max-w-[760px] items-center gap-16">
-          <div
-            aria-hidden
-            className="flex h-[310px] w-[152px] shrink-0 items-center justify-center rounded-[28px] border-[5px] border-ink bg-gradient-to-br from-[#4da6ff] via-[#8ee0ff] to-[#b06bff] p-4 text-center text-xs text-ink"
-          >
-            Insert your Screenshot
+          <div aria-hidden className="relative h-[310px] w-[152px] shrink-0 overflow-hidden rounded-[28px] border-[5px] border-ink bg-white shadow-xl">
+            <PropertyImage src="/images/properties/modern-villa-pool.jpg" alt="" className="h-[130px] w-full" />
+            <div className="space-y-1.5 p-2.5">
+              <p className="text-[8px] font-semibold text-ink">Luxury Villa – Abdoun</p>
+              <p className="text-[7px] text-muted">Current bid</p>
+              <p className="text-[12px] font-bold text-brand">245,000 JOD</p>
+              <div className="flex gap-1 pt-1">
+                {['02', '14', '31'].map((n) => (
+                  <span key={n} className="flex-1 rounded bg-brand-50 py-1 text-center text-[8px] font-semibold text-brand">{n}</span>
+                ))}
+              </div>
+              <div className="mt-2 rounded bg-brand py-1.5 text-center text-[8px] font-medium text-white">Place Bid</div>
+              <div className="rounded border border-brand py-1.5 text-center text-[8px] font-medium text-brand">View Details</div>
+            </div>
           </div>
           <div>
             <h2 className="text-[22px] font-semibold text-ink">Download the App</h2>

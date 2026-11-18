@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
-import { auctions, type PropertyType } from '@/data/auctions'
+import { useEffect, useMemo, useState } from 'react'
+import { auctions, searchAuctions, type PropertyType } from '@/data/auctions'
+import { useQuery } from '@/lib/router'
 import { AuctionCard } from '@/components/AuctionCard'
 import { Footer } from '@/components/Footer'
 import { ChevronDownIcon, FilterIcon, SearchIcon } from '@/components/Icons'
@@ -68,12 +69,17 @@ export default function AuctionsPage() {
   const [tab, setTab] = useState<Tab>('All')
   const [draft, setDraft] = useState<Filters>(emptyFilters)
   const [applied, setApplied] = useState<Filters>(emptyFilters)
-  const [search, setSearch] = useState('')
+  const urlQuery = useQuery().get('q') ?? ''
+  const [search, setSearch] = useState(urlQuery)
+  useEffect(() => {
+    setSearch(urlQuery)
+    setPage(1)
+  }, [urlQuery])
   const [page, setPage] = useState(1)
 
   const results = useMemo(
     () =>
-      auctions.filter((a) => {
+      searchAuctions(search, auctions).filter((a) => {
         if (tab === 'Direct Offers' && !a.directOffer) return false
         if (tab === 'Coming Soon' && a.status !== 'coming-soon') return false
         if (tab === 'Ending Soon' && a.status !== 'ending-soon') return false
@@ -82,7 +88,6 @@ export default function AuctionsPage() {
         if (applied.price && a.startingPrice > applied.price) return false
         if (applied.location && a.location !== applied.location) return false
         if (a.landSize < applied.landMin || a.landSize > applied.landMax) return false
-        if (search && !`${a.title} ${a.location} ${a.code}`.toLowerCase().includes(search.toLowerCase())) return false
         return true
       }),
     [tab, applied, search],
@@ -96,9 +101,7 @@ export default function AuctionsPage() {
 
   return (
     <div className="min-h-screen bg-page">
-      <div className="px-[41px] pt-8">
-        <Navbar active="/auctions" />
-      </div>
+      <Navbar active="/auctions" />
 
       <main className="mx-auto max-w-[1356px] px-[41px]">
         {/* Status tabs */}
@@ -237,6 +240,14 @@ export default function AuctionsPage() {
 
           {/* Results */}
           <section className="flex-1" aria-live="polite">
+            <p className="mb-4 text-sm text-muted">
+              {results.length} {results.length === 1 ? 'result' : 'results'}
+              {search && (
+                <>
+                  {' '}for “<b className="text-ink">{search}</b>”
+                </>
+              )}
+            </p>
             {current.length === 0 ? (
               <div className="rounded-lg bg-white p-16 text-center text-muted shadow-sm">
                 <p className="text-xl font-medium text-ink">No results found</p>

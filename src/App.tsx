@@ -3,7 +3,11 @@ import { AuthProvider } from '@/lib/auth'
 import { useHashRoute } from '@/lib/router'
 import AuctionDetailsPage from '@/pages/AuctionDetailsPage'
 import AuctionsPage from '@/pages/AuctionsPage'
-import ComingSoonPage from '@/pages/ComingSoonPage'
+import { SignInPage, SignUpPage } from '@/pages/AuthPages'
+import DirectOffersPage from '@/pages/DirectOffersPage'
+import LiveBiddingPage from '@/pages/LiveBiddingPage'
+import ListPropertyPage from '@/pages/ListPropertyPage'
+import MapPage from '@/pages/MapPage'
 import HomePage from '@/pages/HomePage'
 
 /**
@@ -11,6 +15,8 @@ import HomePage from '@/pages/HomePage'
  *   #/                 Homepage
  *   #/auctions         Auctions list with filters
  *   #/auctions/:id     Auction details
+ *   #/signin, #/signup Website sign in / sign up
+ *   #/live-bidding, #/offers, #/map, #/list-property  Menu pages
  *   #/admin/...        Admin panel (see src/admin/AdminApp.tsx)
  */
 function Routes() {
@@ -20,7 +26,12 @@ function Routes() {
 
   if (details) return <AuctionDetailsPage id={details[1]} route={route} />
   if (route.startsWith('/auctions')) return <AuctionsPage />
-  if (['/live-bidding', '/offers', '/map', '/list-property'].includes(route)) return <ComingSoonPage route={route} />
+  if (route === '/live-bidding') return <LiveBiddingPage route={route} />
+  if (route === '/offers') return <DirectOffersPage route={route} />
+  if (route === '/map') return <MapPage route={route} />
+  if (route === '/list-property') return <ListPropertyPage route={route} />
+  if (route === '/signin') return <SignInPage />
+  if (route === '/signup') return <SignUpPage />
   return <HomePage />
 }
 

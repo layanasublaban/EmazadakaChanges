@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 /**
- * Uses /images/logo.svg when present (export it from Figma into public/images/),
- * otherwise falls back to the text wordmark.
+ * Emazadak logo exported from the Figma design (public/images/logo.png, 138x41 – used in the header,
+ * and logo-footer.png for the footer). Falls back to a text wordmark if the file is missing.
  */
 export function Logo({ className = '', size = 'md' }: { className?: string; size?: 'md' | 'lg' }) {
   const [failed, setFailed] = useState(false)
@@ -11,9 +11,11 @@ export function Logo({ className = '', size = 'md' }: { className?: string; size
   if (!failed) {
     return (
       <img
-        src="/images/logo.svg"
+        src={lg ? '/images/logo-footer.png' : '/images/logo.png'}
         alt="Emazadak – PropTech Market Leader"
-        className={`${lg ? 'h-[84px]' : 'h-[46px]'} w-auto ${className}`}
+        width={lg ? 270 : 138}
+        height={lg ? 83 : 41}
+        className={`${lg ? 'h-[83px] w-[270px]' : 'h-[41px] w-[138px]'} max-w-none object-contain ${className}`}
         onError={() => setFailed(true)}
       />
     )
