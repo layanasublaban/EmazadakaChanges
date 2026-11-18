@@ -8,7 +8,7 @@ import { GoogleMap, hasMapsKey } from '@/components/GoogleMap'
 import { LiveDot } from '@/components/LiveDot'
 import { useI18n } from '@/lib/i18n'
 import { AR, AR_AREAS, AR_LOCATIONS } from '@/lib/ar'
-import { Link } from '@/lib/router'
+import { Link, navigate } from '@/lib/router'
 
 /* Schematic map of Jordan (no external tiles needed). Coordinates are [lng, lat]. */
 const OUTLINE: [number, number][] = [
@@ -80,7 +80,7 @@ export default function MapPage({ route }: { route: string }) {
       <main className="mx-auto mt-6 grid max-w-[1356px] gap-5 px-4 sm:mt-8 sm:gap-6 sm:px-[41px] lg:grid-cols-[1fr_380px]">
         <section className="relative overflow-hidden rounded-2xl border border-gold/50 bg-gradient-to-b from-[#dfe8e5] to-[#eef3f1] shadow">
           {hasMapsKey ? (
-            <GoogleMap className="h-[420px] sm:h-[560px]" pins={pins} selectedId={hoverId} onSelect={(id) => (window.location.hash = `#/auctions/${id}`)} />
+            <GoogleMap className="h-[420px] sm:h-[560px]" pins={pins} selectedId={hoverId} onSelect={(id) => navigate(`/auctions/${id}`)} />
           ) : (
             <>
               <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('Map of Jordan with auction locations')} className="mx-auto h-auto max-h-[620px] w-full" dir="ltr">
